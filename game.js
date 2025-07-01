@@ -26,9 +26,9 @@ startBtn.addEventListener("click", () => {
   startScreen.style.display = "none";
   gameCanvas.style.display = "block";
 
-  // Resize canvas
-  gameCanvas.width = window.innerWidth;
-  gameCanvas.height = window.innerHeight;
+  // Resize canvas to tablet size
+  gameCanvas.width = 800;  // Tablet-like width
+  gameCanvas.height = 600; // Tablet-like height
 
   startGame();
 });
@@ -41,17 +41,17 @@ function startGame() {
   
   // Create asteroid image
   const asteroidImage = new Image();
-  asteroidImage.src = 'assets/asteroids/asteroid1.png';
+  asteroidImage.src = 'assets/asteroid.png';
 
   let gameRunning = true;
   let score = 0;
   let difficultyLevel = 1;
 
   const ship = {
-    x: gameCanvas.width / 2 - 80, // Adjusted for larger ship
-    y: gameCanvas.height - 200,
-    width: 160, // Doubled from 80
-    height: 160, // Doubled from 80
+    x: gameCanvas.width / 2 - 50, // Adjusted for medium ship
+    y: gameCanvas.height - 140,
+    width: 100, // Medium size between 80 and 160
+    height: 100, // Medium size between 80 and 160
     speed: 8
   };
 
@@ -63,14 +63,32 @@ function startGame() {
   function spawnAsteroid() {
     if (!gameRunning) return;
     
-    const size = 50 + Math.random() * 40; // Slightly larger asteroids (50-90)
+    // Create different asteroid sizes with different point values
+    const sizeType = Math.random();
+    let size, pointValue;
+    
+    if (sizeType < 0.4) {
+      // Small asteroids (40% chance)
+      size = 30 + Math.random() * 20; // 30-50 pixels
+      pointValue = 100;
+    } else if (sizeType < 0.8) {
+      // Medium asteroids (40% chance)
+      size = 50 + Math.random() * 25; // 50-75 pixels
+      pointValue = 200;
+    } else {
+      // Large asteroids (20% chance)
+      size = 75 + Math.random() * 35; // 75-110 pixels
+      pointValue = 500;
+    }
+    
     const x = Math.random() * (gameCanvas.width - size);
     asteroids.push({
       x,
       y: -size,
       width: size,
       height: size,
-      speed: 2 + Math.random() * 3 + (difficultyLevel * 0.5) // Speed increases with difficulty
+      speed: 2 + Math.random() * 3 + (difficultyLevel * 0.5), // Speed increases with difficulty
+      pointValue: pointValue // Store point value for this asteroid
     });
   }
 
@@ -112,10 +130,10 @@ function startGame() {
   // Bullet shooting function
   function shootBullet() {
     bullets.push({
-      x: ship.x + ship.width / 2 - 3, // Adjusted for larger ship
+      x: ship.x + ship.width / 2 - 2.5, // Adjusted for medium ship
       y: ship.y,
-      width: 6, // Slightly larger bullets
-      height: 15,
+      width: 5, // Slightly bigger bullets for medium ship
+      height: 12,
       speed: 12
     });
   }
@@ -194,10 +212,11 @@ function startGame() {
       // Check bullet collision with asteroids
       for (let j = asteroids.length - 1; j >= 0; j--) {
         if (checkCollision(bullet, asteroids[j])) {
-          // Remove both bullet and asteroid
+          // Remove both bullet and asteroid, add points based on asteroid size
+          const destroyedAsteroid = asteroids[j];
           bullets.splice(i, 1);
           asteroids.splice(j, 1);
-          score += 50; // More points for destroying asteroids
+          score += destroyedAsteroid.pointValue; // Use the asteroid's specific point value
           break;
         }
       }
@@ -221,13 +240,15 @@ function startGame() {
         return;
       }
 
-      // Draw asteroid - FIXED VERSION
+      // Draw asteroid - CLEAN VERSION without borders
       ctx.save(); // Save current context state
       
-      if (asteroidImage.complete && asteroidImage.naturalHeight !== 0) {
-        // Make sure the image has actually loaded before drawing
+      // Force the browser to wait for the image to load properly
+      if (asteroidImage.complete && asteroidImage.naturalHeight !== 0 && asteroidImage.naturalWidth !== 0) {
         try {
+          // Draw the actual asteroid image without any border
           ctx.drawImage(asteroidImage, asteroid.x, asteroid.y, asteroid.width, asteroid.height);
+          
         } catch (error) {
           console.log('Error drawing asteroid image:', error);
           // Use fallback if image fails to draw
@@ -317,21 +338,32 @@ function startGame() {
     ctx.fillText(`Asteroids: ${asteroids.length}`, 20, 70);
     ctx.fillText(`Difficulty: ${difficultyLevel}`, 20, 100);
 
+    // Draw scoring legend
+    ctx.font = '14px Orbitron, monospace';
+    ctx.fillStyle = '#00ff00';
+    ctx.fillText('Small: 100pts', gameCanvas.width - 200, 30);
+    ctx.fillStyle = '#ffff00';
+    ctx.fillText('Medium: 200pts', gameCanvas.width - 200, 50);
+    ctx.fillStyle = '#ff0000';
+    ctx.fillText('Large: 500pts', gameCanvas.width - 200, 70);
+
     // Draw instructions
+    ctx.fillStyle = '#ffffff';
     ctx.font = '16px Orbitron, monospace';
     ctx.fillText('Arrow keys: Move | Spacebar: Shoot', 20, gameCanvas.height - 40);
-    ctx.fillText('Avoid asteroids or shoot them! Difficulty increases every 500 points', 20, gameCanvas.height - 20);
+    ctx.fillText('Bigger asteroids = More points! Difficulty increases every 500 points', 20, gameCanvas.height - 20);
 
     requestAnimationFrame(update);
   }
 
-  // Handle image loading
+  // Handle image loading with better error handling
+  asteroidImage.onload = () => {
+    console.log('Asteroid image loaded successfully from:', asteroidImage.src);
+    console.log('Image dimensions:', asteroidImage.naturalWidth, 'x', asteroidImage.naturalHeight);
+  };
+
   shipImage.onload = () => {
     console.log('Ship image loaded successfully');
-  };
-  
-  asteroidImage.onload = () => {
-    console.log('Asteroid image loaded successfully');
   };
 
   // Handle image loading errors
@@ -340,7 +372,9 @@ function startGame() {
   };
   
   asteroidImage.onerror = () => {
-    console.log('Asteroid image failed to load, using fallback graphics');
+    console.log('Asteroid image failed to load from:', asteroidImage.src);
+    console.log('Make sure asteroid.png exists in the assets folder');
+    console.log('Using fallback graphics');
   };
 
   // Start the game loop
