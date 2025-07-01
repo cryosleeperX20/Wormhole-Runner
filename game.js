@@ -43,6 +43,17 @@ function startGame() {
   const asteroidImage = new Image();
   asteroidImage.src = 'assets/asteroid.png';
 
+  // Create background music
+  const backgroundMusic = new Audio('assets/space.mp3');
+  backgroundMusic.loop = true; // Loop the music
+  backgroundMusic.volume = 0.5; // Set volume to 50%
+  
+  // Start playing background music
+  backgroundMusic.play().catch(error => {
+    console.log('Background music failed to play:', error);
+    console.log('This might be due to browser autoplay policies');
+  });
+
   let gameRunning = true;
   let score = 0;
   let difficultyLevel = 1;
@@ -150,6 +161,10 @@ function startGame() {
   function gameOver() {
     gameRunning = false;
     clearInterval(spawnInterval);
+    
+    // Stop background music
+    backgroundMusic.pause();
+    backgroundMusic.currentTime = 0; // Reset to beginning
     
     // Draw game over screen
     ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
