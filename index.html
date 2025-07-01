@@ -7,28 +7,38 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- START SCREEN -->
-  <div id="start-screen">
-    <h1>Wormhole Runner</h1>
-    <p>Select your spaceship</p>
 
-    <div id="ship-select">
-      <img src="assets/ships/ship1.png" class="ship-option" data-ship="1">
-      <img src="assets/ships/ship2.png" class="ship-option" data-ship="2">
-      <img src="assets/ships/ship3.png" class="ship-option" data-ship="3">
-      <img src="assets/ships/ship4.png" class="ship-option" data-ship="4">
-      <img src="assets/ships/ship5.png" class="ship-option" data-ship="5">
-      <img src="assets/ships/ship6.png" class="ship-option" data-ship="6">
-      <img src="assets/ships/ship7.png" class="ship-option" data-ship="7">
+  <!-- 🖥 Game Wrapper (Tablet size) -->
+  <div class="game-wrapper">
+
+    <!-- 🔄 Background Video inside wrapper -->
+    <video id="bg-video" autoplay muted loop playsinline>
+      <source src="assets/wormhole.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <!-- 🛸 Start Screen -->
+    <div id="start-screen">
+      <h1>Wormhole Runner</h1>
+      <p>Select your spaceship</p>
+
+      <div id="ship-select">
+        <img src="assets/ships/ship1.png" class="ship-option" data-ship="1">
+        <img src="assets/ships/ship2.png" class="ship-option" data-ship="2">
+        <img src="assets/ships/ship3.png" class="ship-option" data-ship="3">
+        <img src="assets/ships/ship4.png" class="ship-option" data-ship="4">
+        <img src="assets/ships/ship5.png" class="ship-option" data-ship="5">
+        <img src="assets/ships/ship6.png" class="ship-option" data-ship="6">
+        <img src="assets/ships/ship7.png" class="ship-option" data-ship="7">
+      </div>
+
+      <button id="start-btn">Start Game</button>
     </div>
 
-    <button id="start-btn">Start Game</button>
+    <!-- 🎮 Game Canvas -->
+    <canvas id="gameCanvas"></canvas>
   </div>
 
-  <!-- GAME CANVAS -->
-  <canvas id="gameCanvas"></canvas>
-
-  <!-- JS -->
   <script src="game.js"></script>
 </body>
 </html>
