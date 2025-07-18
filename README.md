@@ -4,6 +4,11 @@
 
 ---
 
+## 🔗 Play the Game
+
+**[Click here to play Wormhole Runner!](https://cryosleeperX20.github.io/Wormhole-Runner/)**  
+Live demo hosted using GitHub Pages.
+
 ## 🎮 Features
 
 - 🚀 Move your spaceship using arrow keys
